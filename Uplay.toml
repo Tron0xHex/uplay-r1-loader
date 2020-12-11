@@ -1,0 +1,16 @@
+[Uplay]
+Saves = "V:\\Games\\Assassin's Creed Rogue\\Saves"
+CdKeys = [""]
+Language = "en-US"
+OfflineMode = true
+InstallHooks = false
+
+[Uplay.Log]
+Write = true
+Path = ""
+
+[Uplay.Profile]
+AccountId = ""
+Email = "fuck.ubisoft@stopoutposts.com"
+Username = "JosephSeed"
+Password = "123456"

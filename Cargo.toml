@@ -1,0 +1,34 @@
+[package]
+name = "loader"
+version = "0.1.0"
+authors = ["Tron0xHEX <dm.fl.worker@gmail.com>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[dependencies]
+serde = "1.0"
+serde_derive = "1.0"
+simplelog = "0.8"
+log = "0.4"
+winapi = { version = "0.3", features = ["libloaderapi"] }
+toml = "0.5"
+lazy_static = "1.4"
+err-derive = "0.3"
+parking_lot = "0.11"
+detour = { version = "0.7", default-features = false }
+
+[build-dependencies]
+regex = "1.4"
+voca_rs = "1.13"
+
+[profile.release]
+lto = "fat"
+opt-level = 2
+
+[lib]
+name = "loader64"
+crate-type = ["cdylib"]
+
+[features]
+default = []
+next-gen-api = []
