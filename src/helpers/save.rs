@@ -1,6 +1,7 @@
 use err_derive::Error;
-use fs::OpenOptions;
-use std::{fs, io, io::prelude::*, io::Error as IoError, io::SeekFrom, path::PathBuf};
+use std::{
+    fs, fs::OpenOptions, io, io::prelude::*, io::Error as IoError, io::SeekFrom, path::PathBuf,
+};
 
 use crate::{
     consts::DEFAULT_SAVE_DATA_OFFSET, consts::SAVE_FILE_EXTENSION, global::CONFIG,
