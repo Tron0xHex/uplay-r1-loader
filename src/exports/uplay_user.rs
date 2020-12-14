@@ -47,13 +47,13 @@ pub unsafe fn uplay_user_get_cd_keys(
 
     #[cfg(feature = "next-gen-api")]
     {
-        (*overlapped).set_result(None);
+        (*overlapped).set_result();
     }
 
     #[cfg(not(feature = "next-gen-api"))]
     {
         (*overlapped).set_zeros();
-        (*overlapped).set_result(Some(cd_keys_list as *const c_void));
+        (*overlapped).set_result(cd_keys_list as *const c_void);
     }
 
     return 1;
@@ -87,13 +87,13 @@ pub unsafe fn uplay_user_get_credentials(
 
     #[cfg(feature = "next-gen-api")]
     {
-        (*overlapped).set_result(None);
+        (*overlapped).set_result();
     }
 
     #[cfg(not(feature = "next-gen-api"))]
     {
         (*overlapped).set_zeros();
-        (*overlapped).set_result(Some(credentials as *const c_void));
+        (*overlapped).set_result(credentials as *const c_void);
     }
 
     return 0;

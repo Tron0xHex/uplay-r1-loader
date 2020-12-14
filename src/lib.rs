@@ -33,6 +33,13 @@ pub unsafe extern "system" fn DllMain(
 
     match call_reason {
         DLL_PROCESS_ATTACH => {
+            assert!(!CONFIG.uplay.saves.is_empty());
+            assert!(!CONFIG.uplay.profile.email.is_empty());
+            assert!(!CONFIG.uplay.profile.username.is_empty());
+            assert!(!CONFIG.uplay.profile.password.is_empty());
+            assert!(!CONFIG.uplay.profile.account_id.is_empty());
+            assert!(!(CONFIG.uplay.log.write && CONFIG.uplay.log.path.is_empty()));
+
             if CONFIG.uplay.log.write {
                 init_logger(&CONFIG.uplay.log.path);
             }

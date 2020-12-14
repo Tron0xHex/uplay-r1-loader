@@ -1,7 +1,6 @@
 use err_derive::Error;
-use std::{
-    fs, fs::OpenOptions, io, io::prelude::*, io::Error as IoError, io::SeekFrom, path::PathBuf,
-};
+use fs::OpenOptions;
+use std::{fs, io, io::prelude::*, io::Error as IoError, io::SeekFrom, path::PathBuf};
 
 use crate::{
     consts::DEFAULT_SAVE_DATA_OFFSET, consts::SAVE_FILE_EXTENSION, global::CONFIG,
@@ -27,10 +26,10 @@ pub fn get_saves_path() -> PathBuf {
 
 #[inline]
 pub fn get_save_path(id: u32) -> PathBuf {
-    let mut saves_path = get_saves_path();
+    let mut path = get_saves_path();
 
-    saves_path.push(format!("{}.{}", id, SAVE_FILE_EXTENSION));
-    saves_path
+    path.push(format!("{}.{}", id, SAVE_FILE_EXTENSION));
+    path
 }
 
 #[inline]
@@ -72,8 +71,8 @@ pub fn get_saves() -> Result<Vec<(u32, String, PathBuf)>, Error> {
 
 #[inline]
 pub fn read_save(id: u32, num_of_bytes_to_read: u32, offset: u32) -> io::Result<(Vec<u8>, usize)> {
-    let save_path = get_save_path(id);
-    let mut file = OpenOptions::new().read(true).open(save_path)?;
+    let path = get_save_path(id);
+    let mut file = OpenOptions::new().read(true).open(path)?;
 
     file.seek(SeekFrom::Start(
         DEFAULT_SAVE_DATA_OFFSET as u64 + offset as u64,
@@ -92,14 +91,14 @@ pub fn write_save(
     num_of_bytes_to_write: u32,
     buffer: &[u8],
 ) -> io::Result<()> {
-    let saves_path = get_saves_path();
+    let path = get_saves_path();
 
-    if !saves_path.exists() {
-        fs::create_dir_all(saves_path)?;
+    if !path.exists() {
+        fs::create_dir_all(path)?;
     }
 
-    let save_path = get_save_path(id);
-    let mut file = options.open(save_path)?;
+    let path = get_save_path(id);
+    let mut file = options.open(path)?;
 
     file.seek(SeekFrom::Start(DEFAULT_SAVE_DATA_OFFSET as u64))?;
     file.write(&buffer[0..num_of_bytes_to_write as usize])?;
@@ -109,19 +108,19 @@ pub fn write_save(
 
 #[inline]
 pub fn remove_save(id: u32) -> Result<(), Error> {
-    let save_path = get_save_path(id);
+    let path = get_save_path(id);
     let manifest = read_manifest()?;
 
-    fs::remove_file(save_path)?;
+    fs::remove_file(path)?;
 
-    write_manifest(&Manifest {
-        saves: manifest
-            .saves
-            .iter()
-            .cloned()
-            .filter(|save| save.id != id as i64)
-            .collect(),
-    })?;
+    let saves = manifest
+        .saves
+        .iter()
+        .cloned()
+        .filter(|save| save.id != id as i64)
+        .collect();
+
+    write_manifest(&Manifest { saves })?;
 
     Ok(())
 }

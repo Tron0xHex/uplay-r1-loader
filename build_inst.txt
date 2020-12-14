@@ -1,0 +1,5 @@
+# x64 past gen
+cargo build --target=x86_64-pc-windows-msvc
+
+# x64 past next gen
+cargo build --target=x86_64-pc-windows-msvc --features=next-gen-api

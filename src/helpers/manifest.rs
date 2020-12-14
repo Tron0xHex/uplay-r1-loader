@@ -40,8 +40,9 @@ pub fn write_manifest(manifest: &Manifest) -> Result<(), Error> {
     }
 
     let manifest_path = get_manifest_path();
+    let manifest_str = toml::to_string(manifest)?;
 
-    fs::write(manifest_path, toml::to_string(manifest)?)?;
+    fs::write(manifest_path, manifest_str)?;
 
     Ok(())
 }

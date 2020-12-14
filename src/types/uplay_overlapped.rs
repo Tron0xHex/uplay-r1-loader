@@ -1,8 +1,13 @@
-use std::{ffi::c_void, ptr::null_mut};
+#[cfg(not(feature = "next-gen-api"))]
+use std::ffi::c_void;
+use std::ptr::null_mut;
 
 #[repr(C)]
 #[derive(Debug)]
 pub struct UplayOverlapped {
+    #[cfg(feature = "next-gen-api")]
+    pub result: *const i32,
+    #[cfg(not(feature = "next-gen-api"))]
     pub result: *const c_void,
     pub is_completed: u32,
     pub reserved: i32,
@@ -15,17 +20,15 @@ impl UplayOverlapped {
         self.reserved = 0;
     }
 
-    pub fn set_result(&mut self, result: Option<*const c_void>) {
-        match result {
-            Some(result) => {
-                self.result = result;
-                self.is_completed = 1;
-            }
-            None => unsafe {
-                self.result = self.result.add(1);
-                self.is_completed = 1;
-                self.reserved = 0;
-            },
-        }
+    #[cfg(feature = "next-gen-api")]
+    pub fn set_result(&mut self) {
+        self.is_completed = 1;
+        self.reserved = 0;
+    }
+
+    #[cfg(not(feature = "next-gen-api"))]
+    pub fn set_result(&mut self, result: *const c_void) {
+        self.result = result;
+        self.is_completed = 1;
     }
 }

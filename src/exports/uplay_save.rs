@@ -6,8 +6,8 @@ use crate::{
     helpers::save::get_saves,
     helpers::save::read_save,
     helpers::save::remove_save,
-    helpers::save::write_save,
-    models::manifest::Save,
+    helpers::{manifest::get_manifest_path, save::write_save},
+    models::manifest::{Manifest, Save},
     types::uplay_save::UplaySave,
     types::{
         uplay_list::{List, UplayList},
@@ -16,9 +16,12 @@ use crate::{
 };
 use err_derive::Error;
 use std::{
-    ffi::c_void, ffi::CStr, ffi::CString, fs::OpenOptions, io::Error as IoError, os::raw::c_char,
-    ptr, slice, str::Utf8Error,
+    ffi::CStr, ffi::CString, fs::OpenOptions, io::Error as IoError, os::raw::c_char, ptr, slice,
+    str::Utf8Error,
 };
+
+#[cfg(not(feature = "next-gen-api"))]
+use std::ffi::c_void;
 
 #[export_name = "UPLAY_SAVE_GetSavegames"]
 pub unsafe fn uplay_save_get_savegames(
@@ -53,13 +56,13 @@ pub unsafe fn uplay_save_get_savegames(
 
             #[cfg(feature = "next-gen-api")]
             {
-                (*overlapped).set_result(None);
+                (*overlapped).set_result();
             }
 
             #[cfg(not(feature = "next-gen-api"))]
             {
                 (*overlapped).set_zeros();
-                (*overlapped).set_result(Some(save_games_list as *const c_void));
+                (*overlapped).set_result(save_games_list as *const c_void);
             }
 
             return 1;
@@ -105,13 +108,13 @@ pub unsafe fn uplay_save_open(
 
     #[cfg(feature = "next-gen-api")]
     {
-        (*overlapped).set_result(None);
+        (*overlapped).set_result();
     }
 
     #[cfg(not(feature = "next-gen-api"))]
     {
         (*overlapped).set_zeros();
-        (*overlapped).set_result(Some(save_handle as *const c_void));
+        (*overlapped).set_result(save_handle as *const c_void);
     }
 
     return 1;
@@ -145,12 +148,12 @@ pub unsafe fn uplay_save_read(
 
             #[cfg(feature = "next-gen-api")]
             {
-                (*overlapped).set_result(None);
+                (*overlapped).set_result();
             }
 
             #[cfg(not(feature = "next-gen-api"))]
             {
-                (*overlapped).set_result(Some(num_of_bytes_read as *const c_void));
+                (*overlapped).set_result(num_of_bytes_read as *const c_void);
             }
 
             return 1;
@@ -184,13 +187,13 @@ pub unsafe fn uplay_save_write(
                 Ok(_) => {
                     #[cfg(feature = "next-gen-api")]
                     {
-                        (*overlapped).set_result(None);
+                        (*overlapped).set_result();
                     }
 
                     #[cfg(not(feature = "next-gen-api"))]
                     {
                         (*overlapped).set_zeros();
-                        (*overlapped).set_result(Some(buffer as *const c_void));
+                        (*overlapped).set_result(buffer as *const c_void);
                     }
 
                     return 1;
@@ -224,7 +227,11 @@ pub unsafe fn uplay_save_set_name(slot_id: u32, name_utf8: *const c_char) -> usi
     }
 
     if let Err(err) = || -> Result<(), Error> {
-        let mut manifest = read_manifest()?;
+        let mut manifest = if !get_manifest_path().exists() {
+            Manifest { saves: Vec::new() }
+        } else {
+            read_manifest()?
+        };
 
         let save_id = slot_id as i64;
         let save_name = CStr::from_ptr(name_utf8).to_str()?.to_string();
@@ -240,7 +247,6 @@ pub unsafe fn uplay_save_set_name(slot_id: u32, name_utf8: *const c_char) -> usi
         }
 
         write_manifest(&manifest)?;
-
         Ok(())
     }() {
         error!("{}", err);
@@ -258,13 +264,12 @@ pub unsafe fn uplay_save_remove(slot_id: u32, overlapped: *mut UplayOverlapped) 
         Ok(_) => {
             #[cfg(feature = "next-gen-api")]
             {
-                (*overlapped).set_result(None);
+                (*overlapped).set_result();
             }
 
             #[cfg(not(feature = "next-gen-api"))]
             {
-                (*overlapped).set_zeros();
-                (*overlapped).set_result(Some(slot_id as *const c_void));
+                (*overlapped).set_result(slot_id as *const c_void);
             }
 
             return 1;

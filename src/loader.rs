@@ -67,6 +67,8 @@ pub unsafe fn init_hooks() {
             }() {
                 error!("{}", err)
             }
+        } else {
+            warn!("Function not found: {}", name);
         }
     }
 }

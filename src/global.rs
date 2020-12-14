@@ -8,7 +8,7 @@ lazy_static! {
         let config_path = env::current_dir().unwrap().to_path_buf().join(CONFIG_NAME);
         let config_data = fs::read_to_string(config_path).unwrap();
 
-        let config = toml::from_str(&config_data).unwrap();
+        let config: Config = toml::from_str(&config_data).unwrap();
 
         config
     };
