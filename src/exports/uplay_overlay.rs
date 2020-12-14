@@ -20,7 +20,7 @@ pub unsafe fn uplay_overlay_set_shop_url(
     }
 
     return 0;
-} 
+}
 
 #[export_name = "UPLAY_OVERLAY_ShowShopUrl"]
 pub fn uplay_overlay_show_shop_url(_: *const c_void, _: *mut UplayOverlapped) -> usize {

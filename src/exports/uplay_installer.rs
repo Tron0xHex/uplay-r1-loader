@@ -20,7 +20,10 @@ pub fn uplay_installer_update_install_order() -> usize {
 
 #[export_name = "UPLAY_INSTALLER_AreChunksInstalled"]
 pub fn uplay_installer_are_chunks_installed(a1: i32, a2: i32) -> usize {
-    debug!("UPLAY_INSTALLER_AreChunksInstalled -> A1: {} A2: {}", a1, a2);
+    debug!(
+        "UPLAY_INSTALLER_AreChunksInstalled -> A1: {} A2: {}",
+        a1, a2
+    );
     return (a2 != 0) as usize;
 }
 
