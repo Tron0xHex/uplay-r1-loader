@@ -14,9 +14,47 @@ extern crate serde_derive;
 #[macro_use]
 extern crate lazy_static;
 
+use std::process::exit;
+
 use global::CONFIG;
 use loader::{init_hooks, init_logger};
+use native_dialog::{Dialog, MessageAlert, MessageType};
 use winapi::shared::minwindef::{BOOL, DWORD, HINSTANCE, LPVOID, TRUE};
+
+#[inline]
+fn fail_if(condition: bool, msg: &str) {
+    if condition {
+        let dialog = MessageAlert {
+            title: "Error...",
+            text: &msg,
+            typ: MessageType::Error,
+        };
+        dialog.show().unwrap();
+        exit(1);
+    }
+}
+
+#[inline]
+fn check_config() {
+    fail_if(CONFIG.uplay.saves.is_empty(), "Saves path is empty!");
+    fail_if(CONFIG.uplay.profile.email.is_empty(), "Email is empty!");
+    fail_if(
+        CONFIG.uplay.profile.username.is_empty(),
+        "Username is empty!",
+    );
+    fail_if(
+        CONFIG.uplay.profile.password.is_empty(),
+        "Password is empty!",
+    );
+    fail_if(
+        CONFIG.uplay.profile.account_id.is_empty(),
+        "Account id is empty!",
+    );
+    fail_if(
+        CONFIG.uplay.log.write && CONFIG.uplay.log.path.is_empty(),
+        "Log path is empty!",
+    );
+}
 
 #[export_name = "SpaceCat"]
 pub fn space_cat() {}
@@ -33,12 +71,7 @@ pub unsafe extern "system" fn DllMain(
 
     match call_reason {
         DLL_PROCESS_ATTACH => {
-            assert!(!CONFIG.uplay.saves.is_empty());
-            assert!(!CONFIG.uplay.profile.email.is_empty());
-            assert!(!CONFIG.uplay.profile.username.is_empty());
-            assert!(!CONFIG.uplay.profile.password.is_empty());
-            assert!(!CONFIG.uplay.profile.account_id.is_empty());
-            assert!(!(CONFIG.uplay.log.write && CONFIG.uplay.log.path.is_empty()));
+            check_config();
 
             if CONFIG.uplay.log.write {
                 init_logger(&CONFIG.uplay.log.path);

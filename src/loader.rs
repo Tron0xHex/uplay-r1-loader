@@ -6,7 +6,6 @@ use std::{ffi::CString, fs::File, iter};
 use winapi::um::libloaderapi::{GetModuleHandleW, GetProcAddress};
 
 use crate::consts::UPLAY_R1_ORIGINAL_DLL_NAME;
-use crate::exports::uplay_arch::uplay_ach_earn_achievement;
 
 use crate::{
     exports::uplay_arch::*, exports::uplay_avatar::*, exports::uplay_common::*,

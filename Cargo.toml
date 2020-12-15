@@ -16,6 +16,7 @@ lazy_static = "1.4"
 err-derive = "0.3"
 parking_lot = "0.11"
 detour = { version = "0.7", default-features = false }
+native-dialog = "0.4"
 
 [build-dependencies]
 regex = "1.4"
