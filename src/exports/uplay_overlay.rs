@@ -14,8 +14,6 @@ pub unsafe fn uplay_overlay_set_shop_url(
 ) -> usize {
     debug!("UPLAY_OVERLAY_SetShopUrl");
 
-    // TODO: Rework.
-
     if !overlapped.is_null() {
         (*overlapped).is_completed = 1;
         (*overlapped).reserved = 0;

@@ -59,9 +59,6 @@ fn check_config() {
 #[export_name = "SpaceCat"]
 pub fn space_cat() {}
 
-// TODO: Rename all variables.
-// TODO: Add get ticket.
-
 #[no_mangle]
 #[allow(non_snake_case, unused_variables)]
 pub unsafe extern "system" fn DllMain(
