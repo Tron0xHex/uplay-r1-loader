@@ -10,6 +10,7 @@ pub struct Manifest {
 pub struct Save {
     #[serde(rename = "Id")]
     pub id: i64,
+    
     #[serde(rename = "Name")]
     pub name: String,
 }
