@@ -18,18 +18,18 @@ use std::process::exit;
 
 use global::CONFIG;
 use loader::{init_hooks, init_logger};
-use native_dialog::{Dialog, MessageAlert, MessageType};
+use native_dialog::{MessageDialog, MessageType};
 use winapi::shared::minwindef::{BOOL, DWORD, HINSTANCE, LPVOID, TRUE};
 
 #[inline]
 fn fail_if(condition: bool, msg: &str) {
     if condition {
-        let dialog = MessageAlert {
-            title: "Error...",
-            text: &msg,
-            typ: MessageType::Error,
-        };
-        dialog.show().unwrap();
+        MessageDialog::new()
+            .set_type(MessageType::Error)
+            .set_title("Error...")
+            .set_text(msg)
+            .show_alert()
+            .unwrap();
         exit(1);
     }
 }
@@ -59,6 +59,9 @@ fn check_config() {
 #[export_name = "SpaceCat"]
 pub fn space_cat() {}
 
+// TODO: Rename all variables.
+// TODO: Add get ticket.
+
 #[no_mangle]
 #[allow(non_snake_case, unused_variables)]
 pub unsafe extern "system" fn DllMain(
@@ -67,7 +70,6 @@ pub unsafe extern "system" fn DllMain(
     reserved: LPVOID,
 ) -> BOOL {
     const DLL_PROCESS_ATTACH: DWORD = 1;
-    const DLL_PROCESS_DETACH: DWORD = 0;
 
     match call_reason {
         DLL_PROCESS_ATTACH => {
@@ -81,8 +83,8 @@ pub unsafe extern "system" fn DllMain(
                 init_hooks();
             }
         }
-        DLL_PROCESS_DETACH => {}
         _ => (),
     }
+
     TRUE
 }

@@ -1,4 +1,5 @@
 [Uplay]
+Name = ""
 Saves = "V:\\Games\\Assassin's Creed Rogue\\Saves"
 CdKeys = [""]
 Language = "en-US"
@@ -14,3 +15,4 @@ AccountId = "JosephSeed"
 Email = "fuck.ubisoft@stopoutposts.com"
 Username = "JosephSeed"
 Password = "123456"
+Ticket = ""

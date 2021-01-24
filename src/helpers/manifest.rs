@@ -1,16 +1,16 @@
 use crate::{consts::SAVES_MANIFEST_NAME, models::manifest::Manifest};
-use err_derive::Error;
 use std::{fs, io, io::Error as IoError, path::PathBuf};
+use thiserror::Error;
 use toml::ser::Error as TomlError;
 
 use super::save::get_saves_path;
 
 #[derive(Debug, Error)]
 pub enum Error {
-    #[error(display = "Toml error: {0:?}", _0)]
-    Toml(#[error(from)] TomlError),
-    #[error(display = "Io error: {0:?}", _0)]
-    Io(#[error(from)] IoError),
+    #[error("Toml error: {0:?}")]
+    Toml(#[from] TomlError),
+    #[error("Io error: {0:?}")]
+    Io(#[from] IoError),
 }
 
 #[inline]
@@ -26,9 +26,9 @@ pub fn read_manifest() -> io::Result<Manifest> {
     let manifest_path = get_manifest_path();
 
     let manifest_str = fs::read_to_string(manifest_path)?;
-    let metadata = toml::from_str(&manifest_str)?;
+    let manifest = toml::from_str(&manifest_str)?;
 
-    Ok(metadata)
+    Ok(manifest)
 }
 
 #[inline]

@@ -8,6 +8,9 @@ pub struct Config {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Uplay {
+    #[serde(rename = "Name")]
+    pub name: String,
+
     #[serde(rename = "Saves")]
     pub saves: String,
 
@@ -52,4 +55,7 @@ pub struct Profile {
 
     #[serde(rename = "Password")]
     pub password: String,
+
+    #[serde(rename = "Ticket")]
+    pub ticket: String,
 }

@@ -1,4 +1,4 @@
-pub mod uplay_arch;
+pub mod uplay_ach;
 pub mod uplay_avatar;
 pub mod uplay_common;
 pub mod uplay_friends;

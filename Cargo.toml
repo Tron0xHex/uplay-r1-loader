@@ -1,5 +1,5 @@
 [package]
-name = "loader"
+name = "uplay_r1_loader"
 version = "0.1.0"
 authors = ["Tron0xHEX <dm.fl.worker@gmail.com>"]
 edition = "2018"
@@ -8,15 +8,16 @@ edition = "2018"
 [dependencies]
 serde = "1.0"
 serde_derive = "1.0"
-simplelog = "0.8"
+simplelog = "0.9"
 log = "0.4"
 winapi = { version = "0.3", features = ["libloaderapi"] }
 toml = "0.5"
 lazy_static = "1.4"
-err-derive = "0.3"
+thiserror = "1.0"
 parking_lot = "0.11"
 detour = { version = "0.7", default-features = false }
-native-dialog = "0.4"
+native-dialog = "0.5"
+dirs = "3.0"
 
 [build-dependencies]
 regex = "1.4"
@@ -24,12 +25,9 @@ voca_rs = "1.13"
 
 [profile.release]
 lto = "fat"
+panic = "abort"
 opt-level = 2
 
 [lib]
-name = "loader64"
+name = "loader"
 crate-type = ["cdylib"]
-
-[features]
-default = []
-next-gen-api = []

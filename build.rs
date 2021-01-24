@@ -33,9 +33,9 @@ fn main() {
 
     hooks.push("]".into());
 
-    let out_dir = env::var("OUT_DIR").unwrap();
-    let hooks_path = Path::new(&out_dir).join("hooks.rs");
-    let hooks_content = hooks.join("");
+    let dir = env::var("OUT_DIR").unwrap();
+    let path = Path::new(&dir).join("hooks.rs");
+    let content = hooks.join("");
 
-    fs::write(&hooks_path, &hooks_content).unwrap();
+    fs::write(&path, &content).unwrap();
 }

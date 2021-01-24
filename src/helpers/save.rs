@@ -1,6 +1,6 @@
-use err_derive::Error;
 use fs::OpenOptions;
-use std::{fs, io, io::prelude::*, io::Error as IoError, io::SeekFrom, path::PathBuf};
+use std::{env, fs, io, io::prelude::*, io::Error as IoError, io::SeekFrom, path::PathBuf};
+use thiserror::Error;
 
 use crate::{
     consts::DEFAULT_SAVE_DATA_OFFSET, consts::SAVE_FILE_EXTENSION, global::CONFIG,
@@ -11,17 +11,25 @@ use super::manifest::{get_manifest_path, read_manifest, write_manifest, Error as
 
 #[derive(Debug, Error)]
 pub enum Error {
-    #[error(display = "Invalid save: {0:?}", _0)]
+    #[error("Invalid save: {0:?}")]
     InvalidSave(String),
-    #[error(display = "Manifest error: {0:?}", _0)]
-    Manifest(#[error(from)] ManifestError),
-    #[error(display = "Io error: {0:?}", _0)]
-    Io(#[error(from)] IoError),
+    #[error("Manifest error: {0:?}")]
+    Manifest(#[from] ManifestError),
+    #[error("Io error: {0:?}")]
+    Io(#[from] IoError),
 }
 
 #[inline]
 pub fn get_saves_path() -> PathBuf {
-    PathBuf::from(&CONFIG.uplay.saves)
+    return match CONFIG.uplay.saves.as_str() {
+        "<default>" => env::current_dir().unwrap().join("Saves"),
+        "<roaming>" => dirs::config_dir()
+            .unwrap()
+            .join("UplayEmu")
+            .join(&CONFIG.uplay.name)
+            .join("Saves"),
+        _ => PathBuf::from(&CONFIG.uplay.saves),
+    };
 }
 
 #[inline]

@@ -8,7 +8,7 @@ use winapi::um::libloaderapi::{GetModuleHandleW, GetProcAddress};
 use crate::consts::UPLAY_R1_ORIGINAL_DLL_NAME;
 
 use crate::{
-    exports::uplay_arch::*, exports::uplay_avatar::*, exports::uplay_common::*,
+    exports::uplay_ach::*, exports::uplay_avatar::*, exports::uplay_common::*,
     exports::uplay_friends::*, exports::uplay_installer::*, exports::uplay_metadata::*,
     exports::uplay_options::*, exports::uplay_overlay::*, exports::uplay_party::*,
     exports::uplay_presence::*, exports::uplay_save::*, exports::uplay_user::*,
@@ -21,6 +21,21 @@ unsafe impl<T> Send for UplayPtr<T> {}
 unsafe impl<T> Sync for UplayPtr<T> {}
 
 static HOOKS: &'static [(&str, UplayPtr<()>)] = include!(concat!(env!("OUT_DIR"), "/hooks.rs"));
+
+#[inline]
+unsafe fn get_module_symbol_address(module: &str, symbol: &str) -> Option<usize> {
+    let module = module
+        .encode_utf16()
+        .chain(iter::once(0))
+        .collect::<Vec<u16>>();
+    let symbol = CString::new(symbol).unwrap();
+    let handle = GetModuleHandleW(module.as_ptr());
+
+    return match GetProcAddress(handle, symbol.as_ptr()) as usize {
+        0 => None,
+        n => Some(n),
+    };
+}
 
 #[inline]
 pub fn init_logger(path: &str) {
@@ -38,20 +53,6 @@ pub fn init_logger(path: &str) {
 
 #[inline]
 pub unsafe fn init_hooks() {
-    let get_module_symbol_address = |module: &str, symbol: &str| -> Option<usize> {
-        let module = module
-            .encode_utf16()
-            .chain(iter::once(0))
-            .collect::<Vec<u16>>();
-        let symbol = CString::new(symbol).unwrap();
-        let handle = GetModuleHandleW(module.as_ptr());
-
-        match GetProcAddress(handle, symbol.as_ptr()) as usize {
-            0 => None,
-            n => Some(n),
-        }
-    };
-
     for (name, address) in HOOKS {
         if let Some(org_address) = get_module_symbol_address(UPLAY_R1_ORIGINAL_DLL_NAME, name) {
             info!("Try to install hook: {}", &name);
